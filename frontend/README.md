@@ -1,3 +1,19 @@
+## Steam profile userscript
+
+`public/cs-history.user.js` adds a **CS History** button to Steam profile pages
+that opens the player in this app. It ships with the build, so install it from
+the deployed site:
+
+https://shakerrdev.github.io/cs-history/cs-history.user.js
+
+Opening that URL with Tampermonkey installed brings up the install prompt.
+`@updateURL` points at the same address, so pushes to `master` roll out
+automatically.
+
+The button links to `/#/?q=<steam id>`, which the app picks up on load and runs
+as a search. That deep link works on its own if you ever want to hand one out
+without the script.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
