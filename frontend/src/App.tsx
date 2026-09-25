@@ -14,7 +14,8 @@ import {
   Typography,
   useMediaQuery,
 } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { PlayerTable } from './components/PlayerTable'
 import { SteamIdDialog } from './components/SteamIdDialog'
 import { useMySteamIds } from './hooks/useMySteamIds'
@@ -31,6 +32,23 @@ function App() {
 
   const { steamIds: mySteamIds, save: saveSteamIds } = useMySteamIds()
   const { fetchPlayer, loading } = usePlayerFetch(mySteamIds, setPlayers)
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const incomingQueryHandled = useRef(false)
+
+  // Deep link used by the Tampermonkey userscript: /#/?q=<steam id or profile url>.
+  // When no Steam IDs are saved yet the dialog is already open and fetchPlayer
+  // would no-op, so the query stays in the URL and this runs again on save.
+  useEffect(() => {
+    if (incomingQueryHandled.current) return
+
+    const query = searchParams.get('q')
+    if (!query || mySteamIds.length === 0) return
+
+    incomingQueryHandled.current = true
+    fetchPlayer(query)
+    setSearchParams({}, { replace: true })
+  }, [searchParams, setSearchParams, mySteamIds, fetchPlayer])
 
   const theme = useMemo(() => createAppTheme(darkMode), [darkMode])
 
